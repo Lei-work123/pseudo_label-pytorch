@@ -7,9 +7,9 @@ from util.Config import parse_dict_args
 def parameters():
     defaults = {
         # Technical details
-        'is_parallel': True,
-        'workers': 2,
-        'gpu': 3,
+        'is_parallel': False,
+        'workers': 0,
+        'gpu': 0,
         'checkpoint_epochs': 20,
 
         # Data
@@ -59,6 +59,7 @@ def parameters():
 
     return defaults
 
+
 def run(base_batch_size, base_labeled_batch_size, base_lr, n_labels, data_seed, is_parallel, **kwargs):
     if is_parallel and torch.cuda.is_available():
         ngpu = torch.cuda.device_count()
@@ -68,11 +69,12 @@ def run(base_batch_size, base_labeled_batch_size, base_lr, n_labels, data_seed, 
         'batch_size': base_batch_size * ngpu,
         'labeled_batch_size': base_labeled_batch_size * ngpu,
         'lr': base_lr,
-        'labels': 'data-local/labels/cifar10/{}_balanced_labels/{:02d}.txt'.format(n_labels, data_seed),
+        'labels': '/home/indemind/Project/pseudo_label/data-local/labels/cifar10/{}_balanced_labels/{:02d}.txt'.format(n_labels, data_seed),
         'is_parallel': is_parallel,
     }
     args = parse_dict_args(**adapted_args, **kwargs)
     main.main(args)
+
 
 if __name__ == "__main__":
     run_params = parameters()
