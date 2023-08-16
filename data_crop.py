@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 from walk import Walk
@@ -85,11 +86,11 @@ def save(cropped_images, id_list):
 
 # 获取标签文件路径
 suffix_label = ['txt']
-label = Walk('/home/indemind/datasets/c1.0.2/ABBY/labels/TRAIN/', suffix_label)
+label = Walk('/home/indemind/datasets/c1.0.2/ABBY/labels/TRAIN', suffix_label)
 
 # 获取图片路径
 suffix_img = ['jpg', 'png', 'JPEG']
-img = Walk('/home/indemind/datasets/c1.0.2/ABBY/JPEGImages/TRAIN/', suffix_img)
+img = Walk('/home/indemind/datasets/c1.0.2/ABBY/JPEGImages/TRAIN', suffix_img)
 
 for i, txt_file in enumerate(label):
     txt_name1 = txt_file.split('/')[-1]
@@ -105,17 +106,21 @@ for i, txt_file in enumerate(label):
             save(cropped_images, id_list)
             break
 
-        # else:
-        #     for j in (1, len(img) - i - 1):
-        #         image_file = img[i + j]
-        #         img_name1 = image_file.split('/')[-1]
-        #         img_name = img_name1.split('.')[0]
-        #         if txt_name == img_name:
-        #             cropped_images = crop_images_from_coordinates(image_file, coordinates)
-        #             save(cropped_images, id_list)
-        #             break
-        #
-
-# 验证else部分的逻辑，找几张图片，标签和图片不对应，测试一下保存的图片对不对
-# j的参数，大小是多少，才能在正确的范围
+# 生成裁剪后图片路径加标签
+list = ['/home/indemind/Project/data_crop/cropped/shoes', '/home/indemind/Project/data_crop/cropped/bin', '/home/indemind/Project/data_crop/cropped/pedestal',
+        '/home/indemind/Project/data_crop/cropped/wire', '/home/indemind/Project/data_crop/cropped/socket', '/home/indemind/Project/data_crop/cropped/cat',
+        '/home/indemind/Project/data_crop/cropped/dog', '/home/indemind/Project/data_crop/cropped/desk_rect', '/home/indemind/Project/data_crop/cropped/desk_round',
+        '/home/indemind/Project/data_crop/cropped/weighing-scale']
+for path in list:
+    crop_suffix_img = ['jpg', 'png', 'JPEG']
+    crop_img = Walk(path, crop_suffix_img)
+    label = str(path.split('/')[-1])
+    class_to_idx = {'shoes': 0, 'bin': 1, 'pedestal': 2, 'wire': 3, 'socket': 4, 'cat': 5, 'dog': 6, 'desk_rect': 7,
+                    'desk_round': 8, 'weighing-scale': 9}
+    id = class_to_idx.get(label)
+    name = label + '.txt'
+    f = open(name, 'w', encoding='utf-8')
+    for num, line in enumerate(crop_img):
+        f.writelines(line + ' ' + str(id) + '\n')
+    f.close()
 
